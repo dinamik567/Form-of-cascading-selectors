@@ -1,45 +1,34 @@
 import styles from "./syles.module.css";
-import { ArrayOfSelectValueObjectI } from "../../types";
 
 interface SelectFormProps {
   nameSelect: string;
-  textInput: string;
-  arrayOfSelectValueObject:
-    | ArrayOfSelectValueObjectI[]
-    | { id: number; title: string }[];
-  onChageSelectedId: (id: number) => void;
+  textLabel: string;
+  arrayAvailableOfSelectValue: string[];
+  selectedValue: string;
+  onChangeSelect: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
 export function SelectForm({
   nameSelect,
-  textInput,
-  arrayOfSelectValueObject,
-  onChageSelectedId,
+  textLabel,
+  arrayAvailableOfSelectValue,
+  onChangeSelect,
+  selectedValue,
 }: SelectFormProps) {
-  function handleChangeSelect(e: React.FormEvent<HTMLSelectElement>) {
-    const selectedOption = e.currentTarget.selectedOptions[0];
-    const selectedId = selectedOption.getAttribute("data-id");
-
-    if (selectedId !== null) {
-      onChageSelectedId(+selectedId);
-    } else {
-      onChageSelectedId(0);
-    }
-  }
-
   return (
     <label className={styles.label}>
-      <span className={styles.textLabel}>{textInput}</span>
+      <span className={styles.textLabel}>{textLabel}</span>
       <select
         className={styles.select}
-        onChange={(e) => handleChangeSelect(e)}
+        onChange={(e) => onChangeSelect(e)}
         name={nameSelect}
+        value={selectedValue}
       >
         <option value={""}>Выбрать</option>
-        {arrayOfSelectValueObject.map((option) => {
+        {arrayAvailableOfSelectValue.map((value, ind) => {
           return (
-            <option key={option.id} data-id={option.id} value={option.title}>
-              {option.title}
+            <option key={ind} value={value}>
+              {value}
             </option>
           );
         })}

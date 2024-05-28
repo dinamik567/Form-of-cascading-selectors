@@ -1,81 +1,99 @@
 import styles from "./styles.module.css";
+import { useState } from "react";
 import { SelectForm } from "../select-form";
-import { useReducer, useState } from "react";
-import { getArrayOfSelectValueObject } from "./utils";
-import { selectionReducer } from "../../reducer";
-import {
-  ACTION_TYPE,
-  NAME_SELECT,
-  initialStateSelectedId,
-  arrayDisciplinesOfSelectValueObject,
-} from "../../settings";
+import { selectionForm } from "../../settings";
+import { NAME_SELECT } from "../../settings";
 
+const { COUNTRY, CITY, DISCIPLINES, ACOOMMODATION } = NAME_SELECT;
 export function MultiSelectFrom() {
-  const [disciplines, setDisciplines] = useState(0);
-  const [selectedId, dispatch] = useReducer(
-    selectionReducer,
-    initialStateSelectedId
-  );
+  const [isActive, setIsActive] = useState(false);
+  const [selectedValues, setSelectedValues] = useState({
+    COUNTRY: "",
+    CITY: "",
+    DISCIPLINES: "",
+    ACOOMMODATION: "",
+  });
 
-  const isActive =
-    selectedId.countryId !== 0 &&
-    selectedId.cityId !== 0 &&
-    selectedId.habitationId !== 0 &&
-    disciplines !== 0;
-
-  const indexRootElement = 1;
-  const arrayCountryOfSelectValueObject =
-    getArrayOfSelectValueObject(indexRootElement);
-  const arrayCityOfSelectValueObject = getArrayOfSelectValueObject(
-    selectedId.countryId
-  );
-  const arrayHabitationOfSelectValueObject = getArrayOfSelectValueObject(
-    selectedId.cityId
-  );
-
-  function handleChangeDisciplinesSelected(id: number) {
-    setDisciplines(id);
+  function handleChangeSelectedCountry(
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) {
+    const country = e.currentTarget.value;
+    country === ""
+      ? selectionForm.setSelectCountry(null)
+      : selectionForm.setSelectCountry(country);
+    setSelectedValues({
+      ...selectedValues,
+      CITY: "",
+      ACOOMMODATION: "",
+      COUNTRY: country,
+    });
+    setIsActive(selectionForm.checkCompleted());
   }
 
-  function handleChangeCounrySelectedId(id: number) {
-    dispatch({ type: ACTION_TYPE.CHOOSE_COUNTRY, id });
+  function handleChangeSelectedCity(e: React.ChangeEvent<HTMLSelectElement>) {
+    const city = e.currentTarget.value;
+    city === ""
+      ? selectionForm.setSelectCity(null)
+      : selectionForm.setSelectCity(city);
+    setSelectedValues({
+      ...selectedValues,
+      ACOOMMODATION: "",
+      CITY: city,
+    });
+    setIsActive(selectionForm.checkCompleted());
   }
 
-  function handleChangeCitySelectedId(id: number) {
-    dispatch({ type: ACTION_TYPE.CHOOSE_CITY, id });
+  function handleChangeSelectedDisplines(
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) {
+    const city = e.currentTarget.value;
+    city === ""
+      ? selectionForm.setSelectDisplines(null)
+      : selectionForm.setSelectDisplines(city);
+    setSelectedValues({ ...selectedValues, DISCIPLINES: city });
+    setIsActive(selectionForm.checkCompleted());
   }
 
-  function handleChangeHabitationSelectedId(id: number) {
-    dispatch({ type: ACTION_TYPE.CHOOSE_HABITATION, id });
+  function handleChangeSelectedAcoommodation(
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) {
+    const accommodation = e.currentTarget.value;
+    accommodation === ""
+      ? selectionForm.setSelectAcoommodation(null)
+      : selectionForm.setSelectAcoommodation(accommodation);
+    setSelectedValues({ ...selectedValues, ACOOMMODATION: accommodation });
+    setIsActive(selectionForm.checkCompleted());
   }
 
   return (
     <form className={styles.form}>
       <SelectForm
-        textInput="Выберете страну"
-        nameSelect={NAME_SELECT.COUNTRY}
-        arrayOfSelectValueObject={arrayCountryOfSelectValueObject}
-        onChageSelectedId={handleChangeCounrySelectedId}
+        textLabel="Выберете страну"
+        nameSelect={COUNTRY}
+        arrayAvailableOfSelectValue={selectionForm.country}
+        onChangeSelect={handleChangeSelectedCountry}
+        selectedValue={selectedValues.COUNTRY}
       />
       <SelectForm
-        textInput="Выберете город"
-        nameSelect={NAME_SELECT.CITY}
-        arrayOfSelectValueObject={arrayCityOfSelectValueObject}
-        onChageSelectedId={handleChangeCitySelectedId}
+        textLabel="Выберете город"
+        nameSelect={CITY}
+        arrayAvailableOfSelectValue={selectionForm.city}
+        onChangeSelect={handleChangeSelectedCity}
+        selectedValue={selectedValues.CITY}
       />
-
       <SelectForm
-        textInput="Вид Вуза"
-        nameSelect={NAME_SELECT.DISCIPLINES}
-        arrayOfSelectValueObject={arrayDisciplinesOfSelectValueObject}
-        onChageSelectedId={handleChangeDisciplinesSelected}
+        textLabel="Вид Вуза"
+        nameSelect={DISCIPLINES}
+        arrayAvailableOfSelectValue={selectionForm.displines}
+        onChangeSelect={handleChangeSelectedDisplines}
+        selectedValue={selectedValues.DISCIPLINES}
       />
-
       <SelectForm
-        textInput="Выберете вариант проживания"
-        nameSelect={NAME_SELECT.ACOOMMODATION}
-        arrayOfSelectValueObject={arrayHabitationOfSelectValueObject}
-        onChageSelectedId={handleChangeHabitationSelectedId}
+        textLabel="Выберете вариант проживания"
+        nameSelect={ACOOMMODATION}
+        arrayAvailableOfSelectValue={selectionForm.acoommodation}
+        onChangeSelect={handleChangeSelectedAcoommodation}
+        selectedValue={selectedValues.ACOOMMODATION}
       />
       <input
         className={`${styles.button} ${isActive ? styles.buttonActive : ""}`}

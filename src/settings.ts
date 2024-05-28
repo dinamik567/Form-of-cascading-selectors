@@ -1,17 +1,3 @@
-import { SelectValuesObjectI, InitialStateSelectedIdI } from "./types";
-
-export const ACTION_TYPE = {
-  CHOOSE_COUNTRY: "choose_country",
-  CHOOSE_CITY: "choose_city",
-  CHOOSE_HABITATION: "choose_habitation",
-} as const;
-
-export const initialStateSelectedId: InitialStateSelectedIdI = {
-  countryId: 0,
-  cityId: 0,
-  habitationId: 0,
-};
-
 export const NAME_SELECT = {
   COUNTRY: "country",
   CITY: "city",
@@ -19,65 +5,116 @@ export const NAME_SELECT = {
   ACOOMMODATION: "accommodation",
 };
 
-export const arrayDisciplinesOfSelectValueObject = [
-  { id: 1, title: "Технический" },
-  { id: 2, title: "Гуманитарный" },
-];
+type CountryKeys = "РФ" | "РБ";
 
-export const initialValueForForm: SelectValuesObjectI = {
-  1: {
-    id: 1,
-    title: "(Root)",
-    childIds: [2, 3],
+export const displines = [];
+export const objectOfCitiesValue: Record<CountryKeys, string[]> = {
+  РФ: ["Москва", "Сочи"],
+  РБ: ["Минск", "Гомель"],
+};
+export const objectOfAcoommodationValue: Record<CountryKeys, string[]> = {
+  РФ: ["Общежития", "Аренда", "Не интересует", "Общежития + Аренда"],
+  РБ: ["Общежития", "Не интересует"],
+};
+
+interface SelectionFormI {
+  country: string[];
+  selectCountry: null | string;
+
+  city: string[];
+  selectCity: null | string;
+
+  displines: string[];
+  selectDisplines: null | string;
+
+  acoommodation: string[];
+  selectAcoommodation: null | string;
+
+  setSelectCountry: (country: string | null) => void;
+  setSelectCity: (city: string | null) => void;
+  setSelectDisplines: (discipline: string | null) => void;
+  setSelectAcoommodation: (acoommodation: string | null) => void;
+
+  setCity: (country: null | string) => void;
+  setAcoommodation: (country: null | string) => void;
+
+  checkCompleted: () => boolean;
+}
+
+export const selectionForm: SelectionFormI = {
+  country: ["РФ", "РБ"],
+  selectCountry: null,
+
+  city: [],
+  selectCity: null,
+
+  displines: ["Технический", "Гуманитарный"],
+  selectDisplines: null,
+
+  acoommodation: [],
+  selectAcoommodation: null,
+
+  setSelectCountry(country: string | null) {
+    this.selectCountry = country;
+    this.setCity(country);
+    this.setSelectCity(null);
+    this.setAcoommodation(null);
+    this.setSelectAcoommodation(null);
   },
-  2: {
-    id: 2,
-    title: "РФ",
-    childIds: [4, 5],
+
+  setSelectCity(city: string | null) {
+    this.selectCity = city;
+    this.setSelectAcoommodation(null);
+    city === null
+      ? this.setAcoommodation(null)
+      : this.setAcoommodation(this.selectCountry);
   },
-  3: {
-    id: 3,
-    title: "РБ",
-    childIds: [6, 7],
+
+  setSelectDisplines(discipline: string | null) {
+    this.selectDisplines = discipline;
   },
-  4: {
-    id: 4,
-    title: "Москва",
-    childIds: [8, 9, 10, 11],
+
+  setSelectAcoommodation(acoommodation: string | null) {
+    this.selectAcoommodation = acoommodation;
   },
-  5: {
-    id: 5,
-    title: "Сочи",
-    childIds: [8, 9, 10, 11],
+  setCity(country: null | string) {
+    if (country === null) {
+      this.city = [];
+      return;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(objectOfCitiesValue, country)) {
+      this.city = objectOfCitiesValue[country as CountryKeys];
+    } else {
+      this.city = [];
+    }
   },
-  6: {
-    id: 6,
-    title: "Минск",
-    childIds: [8, 10],
+
+  setAcoommodation(country: null | string) {
+    if (country === null) {
+      this.acoommodation = [];
+      return;
+    }
+
+    if (
+      Object.prototype.hasOwnProperty.call(objectOfAcoommodationValue, country)
+    ) {
+      this.acoommodation = objectOfAcoommodationValue[country as CountryKeys];
+    } else {
+      this.acoommodation = [];
+    }
   },
-  7: {
-    id: 7,
-    title: "Гомель",
-    childIds: [8, 10],
-  },
-  8: {
-    id: 8,
-    title: "Общежитие",
-    childIds: [],
-  },
-  9: {
-    id: 9,
-    title: "Аренда",
-    childIds: [],
-  },
-  10: {
-    id: 10,
-    title: "Не интересует",
-    childIds: [],
-  },
-  11: {
-    id: 11,
-    title: "Общежития + Аренда",
-    childIds: [],
+
+  checkCompleted() {
+    if (
+      this.selectCountry &&
+      this.selectCity &&
+      this.selectDisplines &&
+      this.selectDisplines
+    ) {
+      return true;
+    } else {
+      return false;
+    }
   },
 };
